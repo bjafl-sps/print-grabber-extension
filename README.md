@@ -1,2 +1,3 @@
-# print-grabber-extension
-Chrome extension that grabs targeted content from tab and formats it for printing.
+# Print Grabber Chrome Extension
+
+A Chrome extension that allows you to print specific parts of webpages with customized settings.

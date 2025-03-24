@@ -1,0 +1,102 @@
+/* Description: CSS for printing articles */
+
+
+    /* Hide unnecessary elements */
+    header, footer, nav, aside, .sidebar, .ads, .comments, .related-content,
+    button, .social-share, .navigation, .menu, .search, #cookie-notice,
+    .subscription-box, .recommended-articles {
+      display: none !important;
+    }
+    
+    /* Ensure content is visible */
+    body, article, main, .content, #content {
+      display: block !important;
+      width: 100% !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      overflow: visible !important;
+    }
+    
+    /* Improve text readability */
+    body {
+      font-family: serif !important;
+      font-size: 12pt !important;
+      line-height: 1.5 !important;
+      color: #000 !important;
+      background: #fff !important;
+    }
+    
+    /* Improve link visibility */
+    a {
+      color: #000 !important;
+      text-decoration: underline !important;
+    }
+    
+    /* Add URL after links for reference */
+    a[href^="http"]:after {
+      content: " (" attr(href) ")";
+      font-size: 90%;
+      font-style: italic;
+    }
+    
+    /* Don't show URL for images */
+    a[href^="http"] img:after {
+      content: "";
+    }
+    
+    /* Ensure images fit on the page */
+    img, figure {
+      max-width: 100% !important;
+      page-break-inside: avoid;
+    }
+    
+    /* Avoid page breaks inside paragraphs and headers */
+    p, h1, h2, h3, h4, h5, h6 {
+      page-break-inside: avoid;
+    }
+    
+    /* Force page breaks after sections */
+    h1, h2 {
+      page-break-after: avoid;
+      page-break-before: auto;
+    }
+    
+    /* Tables */
+    table {
+      border-collapse: collapse !important;
+      width: 100% !important;
+    }
+    
+    /*table, th, td {
+      border: 1px solid #ddd !important;
+    }*/
+    
+    th, td {
+      padding: 8px !important;
+      text-align: left !important;
+    }
+    
+    /* Code blocks 
+    pre, code {
+      background: none !important;
+      border: 1px solid #ddd !important;
+      font-family: monospace !important;
+      font-size: 11pt !important;
+      white-space: pre-wrap !important;
+    }*/
+    
+    /* Improve contrast for light text */
+    * {
+      text-shadow: none !important;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+      color-adjust: exact !important;
+    }
+    
+    /* Ensures background colors and images print */
+    * {
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+      color-adjust: exact !important;
+    }
+  
