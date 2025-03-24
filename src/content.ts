@@ -1,7 +1,5 @@
-
-
 import { DEFAULT_SETTINGS } from './constants';
-import { DomainSettings, MessageRequest, MessageResponse } from './types';
+import { DomainSettings, MessageRequest, MessageResponse, PrintData } from './types';
 
 // Global variables
 let currentSettings: DomainSettings | null = null;
@@ -20,7 +18,6 @@ let originalPrintFunction: () => void | null = () => null;
 
     // Check for matching selectors
     await findMatchingElement();
-
 
     // Intercept print event if needed
     if (currentSettings.capturePrintEvent) {
@@ -42,9 +39,16 @@ chrome.runtime.onMessage.addListener(async function (
 
     if (request.action === 'printContent') {
         if (foundElement) {
-            sendElementToBackground(foundElement);
+            try {
+                await sendElementToBackground(foundElement);
+                sendResponse({ found: true });
+            } catch (error) {
+                console.error('Failed to send content:', error);
+                sendResponse({ found: false });
+            }
         } else {
             console.error('No element found to print');
+            sendResponse({ found: false });
         }
         return true;
     }
@@ -55,14 +59,7 @@ chrome.runtime.onMessage.addListener(async function (
         sendResponse({ found: foundElement !== null });
         return true;
     }
-    if (request.action === 'error') {
-        console.error(request.message);
-        return true;
-    }
-    if (request.action === 'debug') {
-        console.log(request.message);
-        return true;
-    }
+    
     return false;
 });
 
@@ -73,6 +70,7 @@ async function findMatchingElement(): Promise<void> {
     if (!currentSettings || !currentSettings.selectors) {
         return;
     }
+    
     if (currentSettings.iframeSelectors && currentSettings.iframeSelectors.length > 0) {
         for (const selector of currentSettings.iframeSelectors) {
             try {
@@ -92,6 +90,7 @@ async function findMatchingElement(): Promise<void> {
     } else {
         foundElement = findDocumentElement(document);
     }
+    
     chrome.runtime.sendMessage({
         action: 'updateBadge',
         found: foundElement !== null
@@ -143,62 +142,50 @@ async function sendElementToBackground(element: Element): Promise<void> {
     const wrapper = document.createElement('div');
     wrapper.appendChild(clonedElement);
     
-    // Collect all relevant styles from the page
-    //const styles = getPageStyles();
+    // Apply print styles
+    const style = document.createElement('style');
+    style.textContent = await fetchPrintCss(); 
+    wrapper.appendChild(style);
     
     // Create the content object to send to background
-    const contentData = {
+    const contentData: PrintData = {
         html: wrapper.innerHTML,
         settings: currentSettings,
         documentTitle: document.title,
         url: window.location.href,
         hostname: window.location.hostname
     };
-    loadScript('makePdf.js').then(() => { 
-        window.dispatchEvent(new CustomEvent('generatePdf', {
-        detail: { data: contentData }
-      }));
-    });
-        
+    console.log('Sending content to background:', contentData);
     
     // Send to background script
-    /*const port = chrome.runtime.connect({ name: 'generatePdf' });
-    console.log('Connected to background script', port);
-    port.onMessage.addListener((response: MessageResponse) => {
-        console.log(response);
+    return new Promise((resolve, reject) => {
+        chrome.runtime.sendMessage({
+            action: 'generatePdf',
+            printData: contentData
+        }, (response) => {
+            console.log('Response from background:', response);
+            if (chrome.runtime.lastError) {
+                reject(chrome.runtime.lastError);
+            } else if (response && response.success) {
+                resolve();
+            } else {
+                reject(new Error(response?.error || 'Failed to generate PDF'));
+            }
+        });
     });
-    const printRequest: MessageRequest = {
-        action: 'printContent',
-        printData: contentData
-    };
-    port.postMessage(printRequest);*/
-
-    /*const response = await chrome.runtime.sendMessage({
-        action: 'printContent',
-        data: contentData
-    });
-    console.log(response);
-    console.log('Sent content to background script', contentData);*/
 }
 
-/*/ Collect styles from the current page
-function getPageStyles(): string {
-    const stylesheets = Array.from(document.styleSheets);
-    let styles = '';
-    
-    stylesheets.forEach(sheet => {
-        try {
-            const rules = sheet.cssRules || sheet.rules;
-            for (let i = 0; i < rules.length; i++) {
-                styles += rules[i].cssText;
-            }
-        } catch (e) {
-            console.log('Cannot access stylesheet', e);
-        }
-    });
-    
-    return styles;
-}*/
+// Fetch print CSS
+async function fetchPrintCss(): Promise<string> {
+    try {
+        const cssUrl = chrome.runtime.getURL('print.css');
+        const response = await fetch(cssUrl);
+        return await response.text();
+    } catch (error) {
+        console.error('Failed to load print CSS:', error);
+        return '';
+    }
+}
 
 // Intercept the print event
 function interceptPrintEvent(): void {
@@ -206,30 +193,16 @@ function interceptPrintEvent(): void {
         originalPrintFunction = window.print;
         window.print = function () {
             if (foundElement) {
-                sendElementToBackground(foundElement);
+                sendElementToBackground(foundElement).catch(error => {
+                    console.error('Print failed:', error);
+                    // Fall back to original print function
+                    if (originalPrintFunction) {
+                        originalPrintFunction.call(window);
+                    }
+                });
             } else if (originalPrintFunction) {
                 originalPrintFunction.call(window);
             }
         };
     }
 }
-
-
-/*function openPDF(pdfData: Blob, filename: string): void {
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(pdfData);
-    link.download = filename;
-    link.click();
-    link.remove();
-}*/
-
-
-  function loadScript(url: string): Promise<void> {
-    return new Promise((resolve, reject) => {
-      const script = document.createElement('script');
-      script.src = chrome.runtime.getURL(url);
-      script.onload = () => resolve();
-      script.onerror = (e) => reject(e);
-      (document.head || document.documentElement).appendChild(script);
-    });
-  }

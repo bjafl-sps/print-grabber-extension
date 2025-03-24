@@ -22,7 +22,7 @@ export interface StorageData {
 }
 
 export interface MessageRequest {
-    action: 'checkSelectors' | 'printContent' | 'updateSettings' | 'updateBadge' | 'error' | 'printOk' | 'debug';
+    action: 'checkSelectors' | 'printContent' | 'updateSettings' | 'updateBadge' | 'error' | 'printOk' | 'debug' | 'generatePdf';
     selectors?: string[];
     settings?: DomainSettings;
     found?: boolean;

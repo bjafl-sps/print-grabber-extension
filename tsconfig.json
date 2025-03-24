@@ -21,6 +21,6 @@
       "lib": ["DOM", "ESNext"],
       "outDir": "dist"
     },
-    "include": ["src/**/*.ts"],
+    "include": ["src/**/*.ts", "src/offscreen.js"],
     "exclude": ["node_modules"]
   }
