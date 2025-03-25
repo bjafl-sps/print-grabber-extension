@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="pdfmake.min.js"></script>
+    <script src="pdffonts.js"></script>
+    <script src="htmltopdfmake.js"></script>
+    <script src="offscreen.js"></script>
+    <link rel="stylesheet" href="print.css">
+    <style>
+    * { font-family: 'Roboto', sans-serif !important;}
+    @page {
+        size: A4;
+        margin: 25mm;
+    }
+    </style>
+    <script>
+        document.addEventListener('drop', (e) => {
+  e.preventDefault(); // Prevent default behavior
+  
+  const files = e.dataTransfer.files;
+  if (files.length > 0) {
+    const reader = new FileReader();
+    
+    reader.onload = (event) => {
+      // Create a Blob from the ArrayBuffer
+      const blob = new Blob([event.target.result], { type: files[0].type });
+      
+      // Print the blob to console
+      console.log('File as blob:', blob);
+      
+      // If you want to see more details about the blob
+      console.log('Blob size:', blob.size, 'bytes');
+      console.log('Blob type:', blob.type);
+      
+      // If you want to also see the text content (for text files)
+      blob.text().then(text => {
+        console.log('Blob content preview:', text.substring(0, 100) + '...');
+      });
+    };
+    
+    // Read as ArrayBuffer instead of text
+    reader.readAsArrayBuffer(files[0]);
+  }
+});
+    </script>
+</head>
+<body>
+    <!-- This page is never displayed -->
+     <script src="testdata.js"></script>
+</body>
+</html>

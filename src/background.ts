@@ -124,7 +124,6 @@ async function closeOffscreenDocument(): Promise<void> {
 // Generate PDF using offscreen document
 async function generatePDFOffscreen(printData: PrintData): Promise<Blob> {
   // Ensure offscreen document is created
-  let step = 'create-offscreen-document';
   await createOffscreenDocument();
   
   return new Promise((resolve, reject) => {
@@ -186,14 +185,12 @@ async function generatePDFOffscreen(printData: PrintData): Promise<Blob> {
 
 async function handlePdfGeneration(printData: PrintData): Promise<{success: boolean, error?: string}> {
   try {
-    let step = 'generate-pdf';
     const pdfBlob = await generatePDFOffscreen(printData);
     
     if (!pdfBlob) {
       throw new Error('Failed to generate PDF');
     }
     
-    step = 'save-pdf';
     const filename = printData.documentTitle || 'document';
     savePDF(pdfBlob, filename);
     

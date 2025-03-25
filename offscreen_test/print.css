@@ -1,0 +1,102 @@
+
+
+
+    
+    header, footer, nav, aside, .sidebar, .ads, .comments, .related-content,
+    button, .social-share, .navigation, .menu, .search, #cookie-notice,
+    .subscription-box, .recommended-articles {
+      display: none !important;
+    }
+    
+    
+    body, article, main, .content, #content {
+      display: block !important;
+      width: 100% !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      overflow: visible !important;
+    }
+    
+    
+    body {
+      font-family: serif !important;
+      font-size: 12pt !important;
+      line-height: 1.5 !important;
+      color: #000 !important;
+      background: #fff !important;
+    }
+    
+    
+    a {
+      color: #000 !important;
+      text-decoration: underline !important;
+    }
+    
+    
+    a[href^="http"]:after {
+      content: " (" attr(href) ")";
+      font-size: 90%;
+      font-style: italic;
+    }
+    
+    
+    a[href^="http"] img:after {
+      content: "";
+    }
+    
+    
+    img, figure {
+      max-width: 100% !important;
+      page-break-inside: avoid;
+    }
+    
+    
+    p, h1, h2, h3, h4, h5, h6 {
+      page-break-inside: avoid;
+    }
+    
+    
+    h1, h2 {
+      page-break-after: avoid;
+      page-break-before: auto;
+    }
+    
+    
+    table {
+      border-collapse: collapse !important;
+      max-width: 100% !important;
+    }
+    
+    /*table, th, td {
+      border: 1px solid #ddd !important;
+    }*/
+    
+    th, td {
+      padding: 8px !important;
+      text-align: left !important;
+    }
+    
+    /* Code blocks 
+    pre, code {
+      background: none !important;
+      border: 1px solid #ddd !important;
+      font-family: monospace !important;
+      font-size: 11pt !important;
+      white-space: pre-wrap !important;
+    }*/
+    
+    
+    * {
+      text-shadow: none !important;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+      color-adjust: exact !important;
+    }
+    
+    
+    * {
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+      color-adjust: exact !important;
+    }
+  
